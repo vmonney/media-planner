@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d0d">
+<title>Media Intellectuel</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d0d;color:#e8e6e1;font-family:'IBM Plex Sans',-apple-system,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.container{max-width:640px;margin:0 auto;padding:32px 18px 80px}
+.tag-line{font-size:12px;font-family:'IBM Plex Mono',monospace;color:#e94560;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:900;letter-spacing:-0.5px;line-height:1.15;color:#f0ece4;margin-bottom:6px}
+.subtitle{font-size:13px;color:#777;margin-bottom:28px}
+.tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#999;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.tab.active{border-color:#e94560;background:#e94560;color:#0d0d0d}
+.section{background:rgba(255,255,255,0.025);border-radius:12px;border:1px solid rgba(255,255,255,0.07);padding:20px 22px;margin-bottom:16px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.accent-bar{width:4px;height:22px;border-radius:2px}
+.section-title{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:800;color:#e8e6e1;letter-spacing:-0.3px;flex:1}
+.badge-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:1px;color:#0d0d0d}
+.progress-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.progress-bg{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.07)}
+.progress-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.progress-text{font-size:12px;font-family:'IBM Plex Mono',monospace;color:#999;min-width:52px;text-align:right}
+.card{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);transition:opacity 0.2s}
+.card.compact{padding:10px 0}
+.card.checked{opacity:0.38}
+.check-btn{width:28px;height:28px;min-width:28px;border-radius:7px;border:2px solid rgba(255,255,255,0.18);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;margin-top:2px;padding:0}
+.check-btn.on{border-color:#16c79a;background:rgba(22,199,154,0.18)}
+.card-icon{font-size:28px;line-height:1;margin-top:2px}
+.card.compact .card-icon{font-size:22px}
+.card-body{flex:1;min-width:0}
+.card-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-name{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:16px;color:#e8e6e1}
+.card.compact .card-name{font-size:14px}
+.card.checked .card-name{text-decoration:line-through}
+.type-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;border-radius:4px;border:1.5px solid;white-space:nowrap}
+.type-badge.podcast{border-color:#e94560;color:#e94560}
+.type-badge.video{border-color:#4a8fe7;color:#4a8fe7}
+.card-duration{font-size:11px;color:#888;font-family:monospace}
+.card-desc{margin-top:4px;font-size:12.5px;color:#999;line-height:1.4}
+.card-link{margin-top:2px;font-size:11px;color:#666}
+.rotation-list{background:rgba(255,255,255,0.02);border-radius:12px;border:1px solid rgba(255,255,255,0.05);padding:18px 20px}
+.rotation-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#888;margin-bottom:14px}
+.rotation-item{padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid transparent}
+.rotation-item.active{background:rgba(22,199,154,0.08);border-color:rgba(22,199,154,0.25)}
+.rotation-label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#555}
+.rotation-item.active .rotation-label{color:#16c79a}
+.rotation-names{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:12px;color:#666}
+.rotation-item.active .rotation-names{color:#ccc}
+.footer{text-align:center;font-size:11px;color:#444;margin-top:32px;font-family:'IBM Plex Mono',monospace}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+const DAILY=[
+{id:"d1",name:"Pierre Haski — Géopolitique",type:"podcast",duration:"3 min",icon:"🌍",link:"France Inter"},
+{id:"d2",name:"Neurosapiens #ACTION!",type:"podcast",duration:"5 min",icon:"🧠",link:"Anaïs Roux"},
+{id:"d3",name:"Le Dessous des Cartes — L'Essentiel",type:"vidéo",duration:"5 min",icon:"🗺️",link:"ARTE"},
+];
+const WEEKLY={
+1:{label:"Lundi — Tech & Data",items:[
+{id:"w1a",name:"DataGen",type:"podcast",duration:"~45 min",icon:"📊",desc:"Robin Conquet — Stratégie data, interviews CDOs"},
+{id:"w1b",name:"IFTTD — If This Then Dev",type:"podcast",duration:"~45 min",icon:"⚙️",desc:"Bruno Soulez — Veille tech complète"},
+]},
+2:{label:"Mardi — Philosophie",items:[
+{id:"w2a",name:"Monsieur Phi",type:"vidéo",duration:"~20 min",icon:"🎭",desc:"Thibaut Giraud — Philo analytique avec humour"},
+{id:"w2b",name:"Philoxime",type:"vidéo",duration:"~20 min",icon:"⚖️",desc:"Maxime Lambrecht — Éthique contemporaine"},
+{id:"w2c",name:"Avec philosophie",type:"podcast",duration:"~55 min",icon:"📖",desc:"France Culture — Le podcast philo de référence"},
+]},
+3:{label:"Mercredi — Géopolitique",items:[
+{id:"w3a",name:"Le Collimateur",type:"podcast",duration:"~45 min",icon:"🎯",desc:"Alexandre Jubelin — Niveau think tank, IFRI"},
+{id:"w3b",name:"Cultures Monde",type:"podcast",duration:"~58 min",icon:"🌐",desc:"France Culture — Format long intellectuel"},
+]},
+4:{label:"Jeudi — Carrière & Craft",items:[
+{id:"w4a",name:"Artisan Développeur",type:"podcast",duration:"~40 min",icon:"🔨",desc:"Benoit Gantaume — Software craftsmanship"},
+{id:"w4b",name:"Tronche de Tech",type:"podcast",duration:"~45 min",icon:"💡",desc:"Mathieu Sanchez — Histoires de carrière tech"},
+]},
+5:{label:"Vendredi — Sciences",items:[
+{id:"w5a",name:"Science Étonnante",type:"vidéo",duration:"~20 min",icon:"🔬",desc:"David Louapre — IA, biais cognitifs, physique"},
+{id:"w5b",name:"La Conversation scientifique",type:"podcast",duration:"~45 min",icon:"🧪",desc:"Étienne Klein — Science, philo et société"},
+]},
+6:{label:"Samedi — ML & Compétences",items:[
+{id:"w6a",name:"Machine Learnia",type:"vidéo",duration:"~30-60 min",icon:"🤖",desc:"Guillaume Saint-Cirgue — ML de zéro à avancé"},
+{id:"w6b",name:"Les Cast Codeurs",type:"podcast",duration:"~60 min",icon:"☕",desc:"Veille technique dev — 15 ans de référence"},
+]},
+0:{label:"Dimanche — Histoire & Culture",items:[
+{id:"w0a",name:"Nota Bene",type:"vidéo",duration:"~20 min",icon:"📜",desc:"Benjamin Brillaud — Histoire & pop-culture"},
+{id:"w0b",name:"Au Cœur de l'Histoire",type:"podcast",duration:"~20 min",icon:"🏰",desc:"Virginie Girod — Narration historique immersive"},
+{id:"w0c",name:"L'Histoire nous le dira",type:"vidéo",duration:"~25 min",icon:"🍁",desc:"Laurent Turcot — Rigueur académique québécoise"},
+]},
+};
+const MONTHLY=[
+[{id:"m0a",name:"Stoa Gallica — Le stoïcisme aujourd'hui",type:"podcast",icon:"🏛️",desc:"Stoïcisme pratique contemporain"},
+{id:"m0b",name:"Homo Fabulus / EvoSapiens",type:"vidéo",icon:"🧬",desc:"Stéphane Debove — Psycho évolutionnaire"},
+{id:"m0c",name:"Eliott Meunier — Atomic Thinking",type:"vidéo",icon:"📝",desc:"Second cerveau & Obsidian"}],
+[{id:"m1a",name:"Fouloscopie",type:"vidéo",icon:"👥",desc:"Mehdi Moussaïd — Intelligence des foules"},
+{id:"m1b",name:"Hygiène Mentale",type:"vidéo",icon:"🛡️",desc:"Christophe Michel — Esprit critique & zététique"},
+{id:"m1c",name:"Productif au Quotidien",type:"podcast",icon:"⏱️",desc:"Matthieu Desroches — Deep work, GTD"}],
+[{id:"m2a",name:"Le Monde selon l'IFRI",type:"podcast",icon:"🏢",desc:"Marc Hecker — Think tank géopo approfondi"},
+{id:"m2b",name:"Planisphère",type:"podcast",icon:"📍",desc:"Pierre Verluise — Diploweb.com, synthèses validées"},
+{id:"m2c",name:"Cognitif",type:"podcast",icon:"🔎",desc:"Yanis — Neurosciences cognitives, chercheurs CNRS"}],
+[{id:"m3a",name:"Data From Scratch",type:"vidéo",icon:"🗄️",desc:"Willis — Data engineering terrain, 10+ ans XP"},
+{id:"m3b",name:"Micode / Underscore_",type:"vidéo",icon:"🕵️",desc:"Investigation numérique & culture cyber"},
+{id:"m3c",name:"Bye Bye Procrastination",type:"podcast",icon:"🚀",desc:"Claire Vitoux — Format court, psychologie"}],
+[{id:"m4a",name:"Politikon",type:"vidéo",icon:"🏛️",desc:"Philo politique technique et complète"},
+{id:"m4b",name:"DirtyBiology",type:"vidéo",icon:"🦠",desc:"Léo Grasset — Biologie évolutionniste"},
+{id:"m4c",name:"Passion Médiévistes",type:"podcast",icon:"⚔️",desc:"Fanny Cohen Moreau — Recherche médiévale vivante"}],
+[{id:"m5a",name:"Scilabus",type:"vidéo",icon:"🧫",desc:"Viviane Lalande — Approche expérimentale québécoise"},
+{id:"m5b",name:"Defend Intelligence",type:"vidéo",icon:"🤖",desc:"Anis Ayari — IA éthique, 10 ans d'XP"},
+{id:"m5c",name:"Comprendre le monde",type:"vidéo",icon:"🌏",desc:"Pascal Boniface — IRIS, géopo accessible"}],
+[{id:"m6a",name:"Zeste de Science (CNRS)",type:"vidéo",icon:"🔭",desc:"Chaîne officielle CNRS, validée par chercheurs"},
+{id:"m6b",name:"C'est une autre histoire",type:"vidéo",icon:"🎨",desc:"Manon Bril — Mythologie, iconographie, art"},
+{id:"m6c",name:"Neurosapiens (épisode long)",type:"podcast",icon:"🧠",desc:"Anaïs Roux — Deep dive neurosciences"}],
+];
+
+const DAYS_FR=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+const MONTHS_FR=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+function getWeekNum(d){const s=new Date(d.getFullYear(),0,1);const diff=(d-s+((s.getTimezoneOffset()-d.getTimezoneOffset())*60000))/86400000;return Math.floor((diff+s.getDay()+1)/7)}
+function dateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function weekKey(d){return d.getFullYear()+"-W"+getWeekNum(d)}
+function rotKey(d){return "R"+(getWeekNum(d)%MONTHLY.length)}
+
+const STORE_KEY="media-planner-v2";
+
+function loadState(){
+  const now=new Date();
+  const dk=dateKey(now),wk=weekKey(now),rk=rotKey(now);
+  const fresh={daily:{_p:dk},weekly:{_p:wk},monthly:{_p:rk}};
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){
+      const s=JSON.parse(raw);
+      return{
+        daily:(s.daily&&s.daily._p===dk)?s.daily:fresh.daily,
+        weekly:(s.weekly&&s.weekly._p===wk)?s.weekly:fresh.weekly,
+        monthly:(s.monthly&&s.monthly._p===rk)?s.monthly:fresh.monthly,
+      };
+    }
+  }catch(e){}
+  return fresh;
+}
+function saveState(state){try{localStorage.setItem(STORE_KEY,JSON.stringify(state))}catch(e){}}
+
+let state=loadState();
+let currentTab="today";
+
+function isChecked(bucket,id){return !!(state[bucket]&&state[bucket][id])}
+function toggle(bucket,id){
+  state[bucket][id]=!state[bucket][id];
+  saveState(state);
+  render();
+}
+function countChecked(bucket,items){return items.filter(i=>isChecked(bucket,i.id)).length}
+
+function h(tag,attrs,...children){
+  const el=document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{
+    if(k==="className")el.className=v;
+    else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==="style"&&typeof v==="object")Object.assign(el.style,v);
+    else el.setAttribute(k,v);
+  });
+  children.flat(Infinity).forEach(c=>{
+    if(c==null)return;
+    el.appendChild(typeof c==="string"?document.createTextNode(c):c);
+  });
+  return el;
+}
+
+function checkSvg(){
+  const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  s.setAttribute("width","14");s.setAttribute("height","14");s.setAttribute("viewBox","0 0 14 14");s.setAttribute("fill","none");
+  const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+  p.setAttribute("d","M3 7.5L5.5 10L11 4");p.setAttribute("stroke","#16c79a");p.setAttribute("stroke-width","2.2");p.setAttribute("stroke-linecap","round");p.setAttribute("stroke-linejoin","round");
+  s.appendChild(p);return s;
+}
+
+function renderCard(item,bucket,compact){
+  const checked=isChecked(bucket,item.id);
+  const btn=h("button",{className:"check-btn"+(checked?" on":""),onClick:()=>toggle(bucket,item.id)});
+  if(checked)btn.appendChild(checkSvg());
+  const typeCls=item.type==="podcast"?"podcast":"video";
+  const top=h("div",{className:"card-top"},
+    h("span",{className:"card-name"},item.name),
+    h("span",{className:"type-badge "+typeCls},item.type),
+    item.duration?h("span",{className:"card-duration"},item.duration):null
+  );
+  const body=h("div",{className:"card-body"},top,
+    item.desc?h("div",{className:"card-desc"},item.desc):null,
+    item.link?h("div",{className:"card-link"},item.link):null
+  );
+  return h("div",{className:"card"+(compact?" compact":"")+(checked?" checked":"")},btn,h("span",{className:"card-icon"},item.icon),body);
+}
+
+function renderProgress(done,total,color){
+  const pct=total?Math.round(done/total*100):0;
+  return h("div",{className:"progress-wrap"},
+    h("div",{className:"progress-bg"},h("div",{className:"progress-fill",style:{width:pct+"%",background:color}})),
+    h("span",{className:"progress-text",style:{color:pct===100?"#16c79a":"#999"}},done+"/"+total+(pct===100?" ✓":""))
+  );
+}
+
+function renderSection(title,accent,tag,items,bucket,compact){
+  const done=countChecked(bucket,items);
+  const header=h("div",{className:"section-header"},
+    h("div",{className:"accent-bar",style:{background:accent}}),
+    h("h2",{className:"section-title"},title),
+    tag?h("span",{className:"badge-tag",style:{background:accent}},tag):null
+  );
+  return h("div",{className:"section"},header,
+    renderProgress(done,items.length,accent),
+    ...items.map(i=>renderCard(i,bucket,compact))
+  );
+}
+
+function render(){
+  const now=new Date();
+  const dow=now.getDay();
+  const wn=getWeekNum(now);
+  const ri=wn%MONTHLY.length;
+  const app=document.getElementById("app");
+  app.innerHTML="";
+
+  app.appendChild(h("p",{className:"tag-line"},"Media Intellectuel"));
+  app.appendChild(h("h1",null,DAYS_FR[dow]+" "+now.getDate()+" "+MONTHS_FR[now.getMonth()]));
+  app.appendChild(h("p",{className:"subtitle"},"Sem. "+wn+" · Rotation "+(ri+1)+"/"+MONTHLY.length+" · Reset auto jour / semaine / rotation"));
+
+  const tabs=h("div",{className:"tabs"},
+    ...["today","week","month","all"].map((id,i)=>{
+      const labels=["Aujourd'hui","Semaine","Rotation","Tout"];
+      return h("button",{className:"tab"+(currentTab===id?" active":""),onClick:()=>{currentTab=id;render()}},labels[i]);
+    })
+  );
+  app.appendChild(tabs);
+
+  const weekDays=[1,2,3,4,5,6,0];
+  const todayW=WEEKLY[dow];
+  const monthlyItems=MONTHLY[ri];
+  const allWeekly=weekDays.flatMap(d=>WEEKLY[d].items);
+
+  if(currentTab==="today"||currentTab==="all"){
+    app.appendChild(renderSection("Rituel quotidien","#e94560","~13 min",DAILY,"daily",true));
+    app.appendChild(renderSection(todayW.label,"#4a8fe7","aujourd'hui",todayW.items,"weekly",false));
+  }
+
+  if(currentTab==="week"||currentTab==="all"){
+    if(currentTab==="week"){
+      const wd=countChecked("weekly",allWeekly);
+      const box=h("div",{className:"section"},
+        h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}},
+          h("span",{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:"12px",color:"#999"}},"Progression semaine"),
+          h("span",{style:{fontFamily:"'IBM Plex Mono',monospace",fontSize:"14px",fontWeight:"700",color:wd===allWeekly.length?"#16c79a":"#e8e6e1"}},wd+"/"+allWeekly.length)
+        ),
+        renderProgress(wd,allWeekly.length,"#4a8fe7")
+      );
+      app.appendChild(box);
+    }
+    weekDays.forEach(d=>{
+      const w=WEEKLY[d];const isToday=d===dow;
+      app.appendChild(renderSection(w.label,isToday?"#e94560":"#333",isToday?"aujourd'hui":null,w.items,"weekly",false));
+    });
+  }
+
+  if(currentTab==="month"||currentTab==="all"){
+    app.appendChild(renderSection("Rotation "+(ri+1),"#16c79a","sem. "+wn,monthlyItems,"monthly",false));
+    const list=h("div",{className:"rotation-list"},h("h3",{className:"rotation-title"},"Cycle complet"));
+    MONTHLY.forEach((group,gi)=>{
+      const item=h("div",{className:"rotation-item"+(gi===ri?" active":"")},
+        h("span",{className:"rotation-label"},"Rotation "+(gi+1)+(gi===ri?" ← active":"")),
+        h("div",{className:"rotation-names"},...group.map((m,ii)=>h("span",null,m.icon+" "+m.name+(ii<group.length-1?" ·":""))))
+      );
+      list.appendChild(item);
+    });
+    app.appendChild(list);
+  }
+
+  app.appendChild(h("p",{className:"footer"},"~4-5h/semaine · 42 ressources · coches persistantes"));
+}
+
+render();
+</script>
+</body>
+</html>
