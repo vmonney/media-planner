@@ -43,6 +43,7 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:900;l
 .type-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;border-radius:4px;border:1.5px solid;white-space:nowrap}
 .type-badge.podcast{border-color:#e94560;color:#e94560}
 .type-badge.video{border-color:#4a8fe7;color:#4a8fe7}
+.type-badge.lecture{border-color:#f0b429;color:#f0b429}
 .card-duration{font-size:11px;color:#888;font-family:monospace}
 .card-desc{margin-top:4px;font-size:12.5px;color:#999;line-height:1.4}
 .card-link{margin-top:2px;font-size:11px;color:#666}
@@ -62,41 +63,51 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:900;l
 <script>
 const DAILY=[
 {id:"d1",name:"Géopolitique — Pierre Haski",type:"podcast",duration:"~3-4 min",icon:"🌍",link:"France Inter · lun→ven",desc:"Pierre Haski (ex-AFP/Libération, cofondateur Rue89) — L'actu internationale en 4 min, densité maximale. Rituel du matin"},
-{id:"d2",name:"Le Point J",type:"podcast",duration:"~10 min",icon:"🇨🇭",link:"RTS · quotidien",desc:"Une question d'actu, un expert (souvent académique suisse). Ancrage helvétique quotidien — option d'appoint"},
+{id:"d2",name:"Le Point J",type:"podcast",duration:"~12 min",icon:"🇨🇭",link:"RTS · lun→jeu 17h",desc:"Une question d'actu, un·e expert·e (souvent académique suisse). Ancrage helvétique — option d'appoint"},
 ];
 const WEEKLY={
-1:{label:"Lundi — Métacognition & pensée critique",items:[
-{id:"w1a",name:"Méta de Choc",type:"podcast",duration:"~1 h",icon:"🧠",desc:"Élisabeth Feytit — Pensée critique appliquée à soi, biais cognitifs, dérives sectaires. Indépendant, sans pub. Tier S"},
+1:{label:"Lundi — Métacognition & santé mentale",items:[
+{id:"w1a",name:"Méta de Choc",type:"podcast",duration:"~1 h",icon:"🧠",desc:"Élisabeth Feytit — Pensée critique appliquée à soi, emprise, biais cognitifs. Indépendant, sans pub (financé par dons). Sept. 2026 : série « L'esprit critique, ça s'apprend ? ». Tier S"},
+{id:"w1b",name:"Dingue",type:"podcast",duration:"~30 min",icon:"🧩",desc:"RTS, Adrien Zerbini — Santé mentale & neurodivergence : récits vécus + psychiatres/chercheurs. Bimensuel, en alternance avec Méta de Choc. Reprise 21 sept. Tier A"},
+{id:"w1c",name:"Le Grand Continent",type:"lecture",duration:"~10 min",icon:"📨",desc:"Lettre du lundi (GEG, ENS) — Synthèse de l'agenda géopolitique européen de la semaine. Revue de référence, sans pub. Tier S"},
 ]},
 2:{label:"Mardi — Stratégie & géopolitique",items:[
-{id:"w2a",name:"Le Collimateur",type:"podcast",duration:"~1 h 30",icon:"🎯",desc:"Alexandre Jubelin (agrégé & dr. histoire) — Défense & stratégie, adossé à l'IFRI/Le Rubicon. La référence. Tier S"},
+{id:"w2a",name:"Le Collimateur",type:"podcast",duration:"~1 h",icon:"🎯",desc:"Alexandre Jubelin (agrégé & dr. histoire) — Défense & stratégie, adossé à l'IFRI/Le Rubicon. 2-3 sorties/sem. : 1 épisode au choix. Tier S"},
 ]},
-3:{label:"Mercredi — Esprit critique & éco",items:[
-{id:"w3a",name:"La Tronche en Biais",type:"vidéo",duration:"~30 min",icon:"🛡️",desc:"Thomas C. Durand (dr. biologie) — Zététique, débunkage, méthode sceptique. Prix Diderot. Tier A"},
-{id:"w3b",name:"Heu?reka",type:"vidéo",duration:"~30 min",icon:"💶",desc:"Gilles Mitteau, ex-trader (SG, BNP, NYSE) — Création monétaire, finance. Parti pris keynésien assumé. En alternance. Tier A"},
+3:{label:"Mercredi — Pro : management, décision & data",items:[
+{id:"w3a",name:"Outils du Manager",type:"podcast",duration:"~50 min",icon:"🧭",desc:"Cédric Watine (depuis 2009, 800+ ép.) — Management concret : délégation, feedback, décision, négociation. Invités type Olivier Sibony, Julien Pélabère. Tier A"},
+{id:"w3b",name:"DataGen · IFTTD",type:"podcast",duration:"~40 min",icon:"🛠️",desc:"1 épisode au choix — DataGen (Robin Conquet : stratégies data, dbt, semantic layer) ou IFTTD (Bruno Soulez : craft, archi, IA en prod). Sauter les épisodes sponsorisés. Tier A"},
 ]},
-4:{label:"Jeudi — Sciences",items:[
-{id:"w4a",name:"ScienceEtonnante",type:"vidéo",duration:"~30 min",icon:"🔬",desc:"David Louapre (dr. physique, prix Jean-Perrin) — Physique, maths, IA. Un astéroïde porte son nom. Selon les sorties. Tier S"},
+4:{label:"Jeudi — Sciences & comportement (selon les sorties)",items:[
+{id:"w4a",name:"EvoSapiens (ex-Homo Fabulus)",type:"vidéo",duration:"~40 min",icon:"🧬",desc:"Stéphane Debove (dr. biologie évolutive, ENS) — Psycho évolutionniste, comportement, sommeil, morale. Sourcé ligne à ligne, ~1/mois. Tier S"},
+{id:"w4b",name:"ScienceEtonnante",type:"vidéo",duration:"~30 min",icon:"🔬",desc:"David Louapre (dr. physique, prix Jean-Perrin) — Physique, maths, IA. 2026 : tokamaks, crypto quantique, El Niño. ~1/mois. Tier S"},
+{id:"w4c",name:"Le Réveilleur",type:"vidéo",duration:"~45 min",icon:"⚡",desc:"Rodolphe Meyer (dr. sciences de l'environnement) — Énergie, climat, ACV. Sources ADEME/GIEC publiées et annotées. ~1/mois. Tier S"},
 ]},
-5:{label:"Vendredi — Philosophie & logique",items:[
-{id:"w5a",name:"Monsieur Phi",type:"vidéo",duration:"~25 min",icon:"🎭",desc:"Thibaut Giraud (dr. logique, EHESS/Jean-Nicod) — Philo analytique, éthique, philo de l'IA. Selon les sorties. Tier A"},
+5:{label:"Vendredi — Philosophie & idées",items:[
+{id:"w5a",name:"Monsieur Phi",type:"vidéo",duration:"~25 min",icon:"🎭",desc:"Thibaut Giraud (dr. logique, EHESS/Jean-Nicod) — Philo analytique, éthique, philo des LLM. Selon les sorties. Tier A"},
+{id:"w5b",name:"Les Idées Larges",type:"vidéo",duration:"~22 min",icon:"💡",desc:"ARTE, Laura Raim & Youness Bousenna — Un·e chercheur·se, une question de société (Rancière, Orain, Alombert). Bimensuel. Tier A"},
 ]},
-6:{label:"Samedi — Systémique & cartes",items:[
-{id:"w6a",name:"Sismique",type:"podcast",duration:"~1 h",icon:"🌊",desc:"Julien Devaureix — Enjeux systémiques : climat, énergie, IA, société. Invités de très haut niveau. Tier A"},
+6:{label:"Samedi — Systémique, cartes & débat",items:[
+{id:"w6a",name:"Sismique",type:"podcast",duration:"~1 h",icon:"🌊",desc:"Julien Devaureix — Enjeux systémiques : climat, énergie, IA, société. 2026 : série #IA en 10 épisodes. Tier A"},
 {id:"w6b",name:"Le Dessous des Cartes",type:"vidéo",duration:"~12 min",icon:"🗺️",desc:"ARTE, Émilie Aubry — Géopolitique par les cartes ; la factualité par le territoire. Tier A"},
+{id:"w6c",name:"Le Nouvel Esprit Public",type:"podcast",duration:"~1 h",icon:"🗣️",desc:"Philippe Meyer — Débat hebdo argumenté et courtois (Gnesotto, Padis, Wiegel, Foucher…) + « thématiques » avec un·e chercheur·se. Tier S"},
 ]},
 0:{label:"Dimanche — Rotation mensuelle",rotation:true,items:[]},
 };
 const MONTHLY=[
 [{id:"m0a",name:"Tribu",type:"podcast",icon:"🇨🇭",desc:"RTS La Première, Julien Magnollay — Société & sciences humaines, un invité universitaire par épisode"},
-{id:"m0b",name:"Geopolitis",type:"vidéo",icon:"🌐",desc:"RTS / TV5Monde, Laurent Huguenin-Elie — Décryptage géopolitique, point de vue suisse distancié"},
+{id:"m0b",name:"Geopolitis",type:"vidéo",icon:"🌐",desc:"RTS / TV5Monde, Laurent Huguenin-Elie — Décryptage géopolitique depuis la Genève internationale (UNIGE, IHEID)"},
 {id:"m0c",name:"CQFD",type:"podcast",icon:"⚗️",desc:"RTS La Première, Stéphane Gabioud — Le rendez-vous science & santé (EPFL, UNIGE, UNIL)"}],
 [{id:"m1a",name:"Avec philosophie",type:"podcast",icon:"📖",desc:"France Culture, Géraldine Muhlmann — Philosophie exigeante, invités universitaires. Rythme quotidien"},
-{id:"m1b",name:"La Conversation scientifique",type:"podcast",icon:"🧪",desc:"France Culture, Étienne Klein (physicien) — Épistémologie : réfléchir sur la science, pas que ses résultats"}],
+{id:"m1b",name:"La Conversation scientifique",type:"podcast",icon:"🧪",desc:"France Culture, Étienne Klein (physicien) — Épistémologie : réfléchir sur la science, pas que ses résultats"},
+{id:"m1c",name:"Braincast",type:"podcast",icon:"🧠",desc:"Cerveau & Psycho — Un·e chercheur·se (psychiatre, neuroscientifique, épidémiologiste) par épisode. Bimensuel, ~35 min"},
+{id:"m1d",name:"Fouloscopie",type:"vidéo",icon:"👥",desc:"Mehdi Moussaïd (Max Planck Berlin) — Science des foules & intelligence collective, expériences réelles. Rare (4-5/an) : rattrapage"}],
 [{id:"m2a",name:"Paroles d'histoire",type:"podcast",icon:"📜",desc:"André Loez (historien) — Entretiens avec les historiens universitaires sur leurs travaux récents. Binge Audio"},
-{id:"m2b",name:"L'Histoire nous le dira",type:"vidéo",icon:"🏛️",desc:"Laurent Turcot (prof. UQTR) — Vulgarisation historique solide et sourcée"}],
-[{id:"m3a",name:"Entendez-vous l'éco ?",type:"podcast",icon:"📈",desc:"France Culture — Réflexion économique avec des chercheurs (ex. Jeanne Hagenbach, CNRS/Sciences Po)"},
-{id:"m3b",name:"Hygiène mentale (archive)",type:"vidéo",icon:"🗄️",desc:"Christophe Michel — Méthode scientifique, raisonnement bayésien. Chaîne quasi-dormante : bibliothèque de référence"}],
+{id:"m2b",name:"Histoire Vivante",type:"podcast",icon:"🕰️",desc:"RTS La Première, Anaïs Kien — Séries de 5×27 min avec historiens & archives. Fichiers dispo 30 jours"},
+{id:"m2c",name:"L'Histoire nous le dira",type:"vidéo",icon:"🏛️",desc:"Laurent Turcot (prof. UQTR) — Vulgarisation historique solide et sourcée"}],
+[{id:"m3a",name:"Entendez-vous l'éco ?",type:"podcast",icon:"📈",desc:"France Culture, Aliette Hovine — Réflexion économique avec des chercheurs. Hebdo (lundi 14h), ~1 h"},
+{id:"m3b",name:"Le Code a changé",type:"podcast",icon:"💻",desc:"France Inter, Xavier de La Porte — Numérique & société : IA affective, souveraineté, informaticiens (Abiteboul). 20-45 min"},
+{id:"m3c",name:"La Tronche en Biais",type:"vidéo",icon:"🛡️",desc:"Thomas C. Durand (dr. biologie) — Zététique, débunkage, méthode sceptique. Prix Diderot. Redondant avec Méta de Choc : en rotation"}],
 ];
 
 const DAYS_FR=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
@@ -107,7 +118,7 @@ function dateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2
 function weekKey(d){return d.getFullYear()+"-W"+getWeekNum(d)}
 function rotKey(d){return "R"+(getWeekNum(d)%MONTHLY.length)}
 
-const STORE_KEY="media-planner-v4";
+const STORE_KEY="media-planner-v5";
 
 function loadState(){
   const now=new Date();
@@ -166,7 +177,7 @@ function renderCard(item,bucket,compact){
   const checked=isChecked(bucket,item.id);
   const btn=h("button",{className:"check-btn"+(checked?" on":""),onClick:()=>toggle(bucket,item.id)});
   if(checked)btn.appendChild(checkSvg());
-  const typeCls=item.type==="podcast"?"podcast":"video";
+  const typeCls=item.type==="podcast"?"podcast":item.type==="lecture"?"lecture":"video";
   const top=h("div",{className:"card-top"},
     h("span",{className:"card-name"},item.name),
     h("span",{className:"type-badge "+typeCls},item.type),
@@ -210,7 +221,7 @@ function render(){
 
   app.appendChild(h("p",{className:"tag-line"},"Media Intellectuel"));
   app.appendChild(h("h1",null,DAYS_FR[dow]+" "+now.getDate()+" "+MONTHS_FR[now.getMonth()]));
-  app.appendChild(h("p",{className:"subtitle"},"Sem. "+wn+" · Rotation "+(ri+1)+"/"+MONTHLY.length+" · Noyau Tier S/A + socle suisse en rotation"));
+  app.appendChild(h("p",{className:"subtitle"},"Sem. "+wn+" · Rotation "+(ri+1)+"/"+MONTHLY.length+" · Noyau Tier S/A · perso · pro · socle suisse"));
 
   const tabs=h("div",{className:"tabs"},
     ...["today","week","month","all"].map((id,i)=>{
@@ -269,7 +280,7 @@ function render(){
     app.appendChild(list);
   }
 
-  app.appendChild(h("p",{className:"footer"},"Contenus francophones à haute densité · noyau Tier S/A + rotations · màj juil. 2026"));
+  app.appendChild(h("p",{className:"footer"},"Contenus francophones à haute densité · noyau Tier S/A + rotations · màj sept. 2026"));
 }
 
 render();
