@@ -45,6 +45,8 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:900;l
 .type-badge.video{border-color:#4a8fe7;color:#4a8fe7}
 .type-badge.lecture{border-color:#f0b429;color:#f0b429}
 .card-duration{font-size:11px;color:#888;font-family:monospace}
+.count-badge{font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:500;color:#666;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.04)}
+.count-badge.least{color:#f0b429;background:rgba(240,180,41,0.12)}
 .card-desc{margin-top:4px;font-size:12.5px;color:#999;line-height:1.4}
 .card-link{margin-top:2px;font-size:11px;color:#666}
 .rotation-list{background:rgba(255,255,255,0.02);border-radius:12px;border:1px solid rgba(255,255,255,0.05);padding:18px 20px}
@@ -55,6 +57,7 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:900;l
 .rotation-item.active .rotation-label{color:#16c79a}
 .rotation-names{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:12px;color:#666}
 .rotation-item.active .rotation-names{color:#ccc}
+.rotation-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-left:2px}
 .footer{text-align:center;font-size:11px;color:#444;margin-top:32px;font-family:'IBM Plex Mono',monospace}
 </style>
 </head>
@@ -102,7 +105,7 @@ const MONTHLY=[
 {id:"m1c",name:"Braincast",type:"podcast",icon:"🧠",desc:"Cerveau & Psycho — Un·e chercheur·se (psychiatre, neuroscientifique, épidémiologiste) par épisode. Bimensuel, ~35 min"},
 {id:"m1d",name:"Fouloscopie",type:"vidéo",icon:"👥",desc:"Mehdi Moussaïd (Max Planck Berlin) — Science des foules & intelligence collective, expériences réelles. Rare (4-5/an) : rattrapage"}],
 [{id:"m2a",name:"Paroles d'histoire",type:"podcast",icon:"📜",desc:"André Loez (historien) — Entretiens avec les historiens universitaires sur leurs travaux récents. Binge Audio"},
-{id:"m2b",name:"Histoire Vivante",type:"podcast",icon:"🕰️",desc:"RTS La Première, Anaïs Kien — Séries de 5×27 min avec historiens & archives. Fichiers dispo 30 jours"},
+{id:"m2b",name:"Histoire Vivante",type:"vidéo",icon:"🕰️",desc:"RTS La Première, Anaïs Kien — Séries de 5×27 min avec historiens & archives. Fichiers dispo 30 jours"},
 {id:"m2c",name:"L'Histoire nous le dira",type:"vidéo",icon:"🏛️",desc:"Laurent Turcot (prof. UQTR) — Vulgarisation historique solide et sourcée"}],
 [{id:"m3a",name:"Entendez-vous l'éco ?",type:"podcast",icon:"📈",desc:"France Culture, Aliette Hovine — Réflexion économique avec des chercheurs. Hebdo (lundi 14h), ~1 h"},
 {id:"m3b",name:"Le Code a changé",type:"podcast",icon:"💻",desc:"France Inter, Xavier de La Porte — Numérique & société : IA affective, souveraineté, informaticiens (Abiteboul). 20-45 min"},
@@ -122,7 +125,7 @@ const STORE_KEY="media-planner-v5";
 function loadState(){
   const now=new Date();
   const dk=dateKey(now),wk=weekKey(now),rk=rotKey(now);
-  const fresh={daily:{_p:dk},weekly:{_p:wk},monthly:{_p:rk}};
+  const fresh={daily:{_p:dk},weekly:{_p:wk},monthly:{_p:rk},counts:{}};
   try{
     const raw=localStorage.getItem(STORE_KEY);
     if(raw){
@@ -131,6 +134,7 @@ function loadState(){
         daily:(s.daily&&s.daily._p===dk)?s.daily:fresh.daily,
         weekly:(s.weekly&&s.weekly._p===wk)?s.weekly:fresh.weekly,
         monthly:(s.monthly&&s.monthly._p===rk)?s.monthly:fresh.monthly,
+        counts:s.counts||{},
       };
     }
   }catch(e){}
@@ -141,9 +145,33 @@ function saveState(state){try{localStorage.setItem(STORE_KEY,JSON.stringify(stat
 let state=loadState();
 let currentTab="today";
 
+function getCount(id){return (state.counts[id]&&state.counts[id].n)||0}
+function todayItems(){
+  const now=new Date();
+  const dow=now.getDay();
+  const wn=getWeekNum(now);
+  const w=WEEKLY[dow];
+  if(w.rotation)return MONTHLY[wn%MONTHLY.length];
+  return w.items;
+}
 function isChecked(bucket,id){return !!(state[bucket]&&state[bucket][id])}
 function toggle(bucket,id){
-  state[bucket][id]=!state[bucket][id];
+  const next=!state[bucket][id];
+  state[bucket][id]=next;
+  if(bucket!=="daily"){
+    const today=dateKey(new Date());
+    const inToday=todayItems().some(i=>i.id===id);
+    if(inToday){
+      if(!state.counts[id])state.counts[id]={n:0,last:null};
+      const c=state.counts[id];
+      if(next){
+        if(c.last!==today){c.n+=1;c.last=today}
+      }else if(c.last===today){
+        c.n=Math.max(0,c.n-1);
+        c.last=null;
+      }
+    }
+  }
   saveState(state);
   render();
 }
@@ -172,15 +200,20 @@ function checkSvg(){
   s.appendChild(p);return s;
 }
 
-function renderCard(item,bucket,compact){
+function renderCard(item,bucket,compact,least){
   const checked=isChecked(bucket,item.id);
   const btn=h("button",{className:"check-btn"+(checked?" on":""),onClick:()=>toggle(bucket,item.id)});
   if(checked)btn.appendChild(checkSvg());
   const typeCls=item.type==="podcast"?"podcast":item.type==="lecture"?"lecture":"video";
+  const n=getCount(item.id);
+  const countBadge=bucket!=="daily"
+    ?h("span",{className:"count-badge"+(least?" least":"")},"×"+n+(least?" · le moins vu":""))
+    :null;
   const top=h("div",{className:"card-top"},
     h("span",{className:"card-name"},item.name),
     h("span",{className:"type-badge "+typeCls},item.type),
-    item.duration?h("span",{className:"card-duration"},item.duration):null
+    item.duration?h("span",{className:"card-duration"},item.duration):null,
+    countBadge
   );
   const body=h("div",{className:"card-body"},top,
     item.desc?h("div",{className:"card-desc"},item.desc):null,
@@ -204,9 +237,14 @@ function renderSection(title,accent,tag,items,bucket,compact){
     h("h2",{className:"section-title"},title),
     tag?h("span",{className:"badge-tag",style:{background:accent}},tag):null
   );
+  let leastIds=new Set();
+  if(bucket!=="daily"&&items.length>1){
+    const min=Math.min(...items.map(i=>getCount(i.id)));
+    items.forEach(i=>{if(getCount(i.id)===min)leastIds.add(i.id)});
+  }
   return h("div",{className:"section"},header,
     renderProgress(done,items.length,accent),
-    ...items.map(i=>renderCard(i,bucket,compact))
+    ...items.map(i=>renderCard(i,bucket,compact,leastIds.has(i.id)))
   );
 }
 
@@ -272,7 +310,11 @@ function render(){
     MONTHLY.forEach((group,gi)=>{
       const item=h("div",{className:"rotation-item"+(gi===ri?" active":"")},
         h("span",{className:"rotation-label"},"Rotation "+(gi+1)+(gi===ri?" ← active":"")),
-        h("div",{className:"rotation-names"},...group.map((m,ii)=>h("span",null,m.icon+" "+m.name+(ii<group.length-1?" ·":""))))
+        h("div",{className:"rotation-names"},...group.map((m,ii)=>h("span",null,
+          m.icon+" "+m.name,
+          h("span",{className:"rotation-count"}," ×"+getCount(m.id)),
+          ii<group.length-1?" ·":""
+        )))
       );
       list.appendChild(item);
     });
